@@ -148,7 +148,20 @@ class Child extends Parent{
     // static hobby = "pingpong";
 }
 ```
-此时你访问Child.hobby就获得"majiang"！不用我说你应该也能理解，因为Child中并没有hobby属性，所以会沿着原型链来访问，而我们的Child.__proto__=Parent，所以就能直接继承了父类的静态变量了。但是，你刚才也看到了，如果子类有同名的静态变量就会覆盖掉父类的静态变量，这是由于原型链的固有属性导致的!接下来我们看一下其他的通用方法：
+此时你访问Child.hobby就获得"majiang"！不用我说你应该也能理解，因为Child中并没有hobby属性，所以会沿着原型链来访问，而我们的Child.__proto__=Parent，所以就能直接继承了父类的静态变量了。但是，你刚才也看到了，*如果子类有同名的静态变量就会覆盖掉父类的静态变量，这是由于原型链的固有属性导致的*。对于静态方法也是同样的道理:
+```js
+class Parent {
+    static getAge(){
+      console.log(12);
+    }
+}
+class Child extends Parent{
+  static getAge(){
+    console.log(13);
+  }
+}
+```
+此时，当你调用Child.getAge后得到的结果为13，而当你将Child的getAge注释掉，然后继续调用Child.getAge的时候得到的就是12了。其实通过上面的*Child.__proto__=Parent*是很容易理解的，因为Child不存在getAge方法，所以会通过原型链继续往上查找。接下来我们看一下其他的通用方法：
 
 ##### 1.4 看看__get方法
 我们先看看__get是如何调用的：
@@ -186,7 +199,7 @@ var _get = function get(object, property, receiver) {
  //获取父类原型链中的指定方法
  if (desc === undefined) {
   var parent = Object.getPrototypeOf(object);
-  //继续网上获取父类原型
+  //继续往上获取父类原型
    if (parent === null) { 
         return undefined; 
    } else { 
